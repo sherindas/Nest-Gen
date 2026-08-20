@@ -23,17 +23,7 @@ export const complaintSchema = z.object({
   serviceProduct: z.string().min(1, "Service/Product is required"),
 
   /** Category of the complaint */
-  complaintType: z.enum(
-    [
-      "Product Issue",
-      "Installation Issue",
-      "Service Issue",
-      "Technical Issue",
-      "Warranty Issue",
-      "Other",
-    ],
-    { errorMap: () => ({ message: "Complaint type is required" }) }
-  ),
+  complaintType: z.string().min(1, "Complaint type is required"),
 
   /** Invoice or job reference number — optional */
   invoiceReference: z.string().optional(),

@@ -201,7 +201,17 @@ export function UnifiedServiceHub({ initialService }: { initialService?: string 
 
       if (!res.ok) {
         const data = await res.json().catch(() => null);
-        throw new Error(data?.message || "Submission failed. Please try again.");
+        let errorDetail = data?.message;
+        if (!errorDetail && data?.errors) {
+          if (typeof data.errors === "string") {
+            errorDetail = data.errors;
+          } else if (typeof data.errors === "object") {
+            errorDetail = Object.entries(data.errors)
+              .map(([field, errs]) => `${field}: ${Array.isArray(errs) ? errs.join(", ") : errs}`)
+              .join("; ");
+          }
+        }
+        throw new Error(errorDetail || "Submission failed. Please try again.");
       }
 
       setSubmitted(true);

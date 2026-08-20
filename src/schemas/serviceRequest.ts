@@ -19,18 +19,7 @@ export const serviceRequestSchema = z.object({
   service: z.string().min(1, "Service is required"),
 
   /** Nature of the request */
-  requirementType: z.enum(
-    [
-      "New Installation",
-      "Purchase/Sales Enquiry",
-      "Repair",
-      "Maintenance",
-      "Service",
-      "Replacement",
-      "Other",
-    ],
-    { errorMap: () => ({ message: "Requirement type is required" }) }
-  ),
+  requirementType: z.string().min(1, "Requirement type is required"),
 
   /** Customer's location — required */
   location: z.string().min(1, "Location is required"),
