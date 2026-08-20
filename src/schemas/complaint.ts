@@ -1,0 +1,48 @@
+import { z } from "zod";
+
+/**
+ * Zod schema for Complaint form submissions.
+ * Used for both client-side validation (react-hook-form) and
+ * server-side validation in the /api/complaint route.
+ *
+ * Note: The image file is validated separately (client-side via File API,
+ * server-side via Content-Type + size checks) since Zod cannot inspect
+ * File objects in all environments.
+ */
+export const complaintSchema = z.object({
+  /** Customer's full name — required */
+  fullName: z.string().min(1, "Full name is required"),
+
+  /** 10-digit mobile number — required */
+  mobile: z.string().min(10, "Valid mobile number required"),
+
+  /** Email address — optional */
+  email: z.string().email("Invalid email address").optional().or(z.literal("")),
+
+  /** Service or product the complaint relates to — required; auto-populated on service pages */
+  serviceProduct: z.string().min(1, "Service/Product is required"),
+
+  /** Category of the complaint */
+  complaintType: z.enum(
+    [
+      "Product Issue",
+      "Installation Issue",
+      "Service Issue",
+      "Technical Issue",
+      "Warranty Issue",
+      "Other",
+    ],
+    { errorMap: () => ({ message: "Complaint type is required" }) }
+  ),
+
+  /** Invoice or job reference number — optional */
+  invoiceReference: z.string().optional(),
+
+  /** Customer's location — required */
+  location: z.string().min(1, "Location is required"),
+
+  /** Detailed description of the complaint — required */
+  complaintDescription: z.string().min(1, "Description is required"),
+});
+
+export type ComplaintFormData = z.infer<typeof complaintSchema>;
