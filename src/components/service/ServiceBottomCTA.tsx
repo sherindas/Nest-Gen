@@ -1,13 +1,12 @@
 import React from "react";
-import Link from "next/link";
-import { PhoneCall, MessageSquare, ArrowRight, ShieldCheck } from "lucide-react";
+import { PhoneCall, MessageSquare, ShieldCheck } from "lucide-react";
 
 export interface ServiceBottomCTAProps {
   serviceName: string;
-  hasSales: boolean;
+  hasSales?: boolean;
 }
 
-export function ServiceBottomCTA({ serviceName, hasSales }: ServiceBottomCTAProps) {
+export function ServiceBottomCTA({ serviceName }: ServiceBottomCTAProps) {
   const phone = process.env.NEXT_PUBLIC_COMPANY_PHONE || "+91 98765 43210";
   const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919876543210";
 

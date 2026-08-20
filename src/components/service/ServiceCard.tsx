@@ -38,7 +38,6 @@ const serviceDescKn: Record<string, string> = {
 
 export function ServiceCard({
   name,
-  category,
   iconKey,
   description,
   serviceItems,

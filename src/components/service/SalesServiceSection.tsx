@@ -1,19 +1,17 @@
 import React from "react";
-import Link from "next/link";
-import { ShoppingBag, Wrench, ArrowRight, CheckCircle2 } from "lucide-react";
+import { ShoppingBag, Wrench, CheckCircle2 } from "lucide-react";
 
 export interface SalesServiceSectionProps {
   hasSales: boolean;
   salesItems?: string[];
   serviceItems: string[];
-  serviceName: string;
+  serviceName?: string;
 }
 
 export function SalesServiceSection({
   hasSales,
   salesItems,
   serviceItems,
-  serviceName,
 }: SalesServiceSectionProps) {
   if (!hasSales) return null;
 

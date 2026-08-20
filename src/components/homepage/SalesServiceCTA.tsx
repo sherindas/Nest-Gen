@@ -11,7 +11,7 @@ export function SalesServiceCTA() {
         </h2>
         <p className="text-orange-100 text-base md:text-lg max-w-xl leading-relaxed">
           Whether you need a new installation, want to purchase equipment, or
-          need a repair — we're ready to help. Get in touch and we'll take care
+          need a repair — we&apos;re ready to help. Get in touch and we&apos;ll take care
           of the rest.
         </p>
 

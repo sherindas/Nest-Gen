@@ -14,7 +14,6 @@ import {
   Cpu,
   Wrench,
   AlertTriangle,
-  Sparkles,
   LucideIcon,
 } from "lucide-react";
 

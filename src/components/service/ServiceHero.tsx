@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { ArrowLeft, ShieldCheck, Clock, CheckCircle2, PhoneCall, MessageSquare, ArrowRight } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Clock } from "lucide-react";
 
 export interface ServiceHeroProps {
   serviceName: string;
@@ -13,8 +13,6 @@ export function ServiceHero({
   headline,
   supportingText,
 }: ServiceHeroProps) {
-  const phone = process.env.NEXT_PUBLIC_COMPANY_PHONE || "+91 98765 43210";
-  const whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919876543210";
 
   return (
     <section className="relative overflow-hidden mesh-gradient-hero text-white pt-10 pb-16 md:pt-14 md:pb-20">

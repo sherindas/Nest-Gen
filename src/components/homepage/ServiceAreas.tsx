@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import { MapPin, Search, CheckCircle, Phone } from "lucide-react";
 
 export function ServiceAreas() {

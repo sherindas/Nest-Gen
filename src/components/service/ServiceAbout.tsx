@@ -1,5 +1,5 @@
 import React from "react";
-import { CheckCircle2, ShieldCheck, Wrench, Sparkles } from "lucide-react";
+import { CheckCircle2, Wrench } from "lucide-react";
 
 export interface ServiceAboutProps {
   description: string;
