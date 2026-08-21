@@ -32,6 +32,7 @@ export function SalesEnquiryForm({ defaultService }: SalesEnquiryFormProps) {
     formState: { errors, isSubmitting },
   } = useForm<SalesEnquiryFormData>({
     resolver: zodResolver(salesEnquirySchema),
+    mode: "onBlur",
     defaultValues: {
       productServiceRequirement: defaultService ?? "",
     },

@@ -48,6 +48,7 @@ export function ComplaintForm({ defaultService }: ComplaintFormProps) {
     formState: { errors, isSubmitting },
   } = useForm<ComplaintFormData>({
     resolver: zodResolver(complaintSchema),
+    mode: "onBlur",
     defaultValues: {
       serviceProduct: defaultService ?? "",
     },

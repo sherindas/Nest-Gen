@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isValidMobile, isValidEmail } from "@/lib/validation";
 
 /**
  * Zod schema for Complaint form submissions.
@@ -14,10 +15,22 @@ export const complaintSchema = z.object({
   fullName: z.string().min(1, "Full name is required"),
 
   /** 10-digit mobile number — required */
-  mobile: z.string().min(10, "Valid mobile number required"),
+  mobile: z
+    .string()
+    .min(1, "Mobile number is required")
+    .refine(
+      (val) => isValidMobile(val),
+      { message: "Please enter a valid 10-digit mobile number (e.g. 98765 43210)" }
+    ),
 
-  /** Email address — optional */
-  email: z.string().email("Invalid email address").optional().or(z.literal("")),
+  /** Email address — optional, but must be valid if provided */
+  email: z
+    .string()
+    .optional()
+    .refine(
+      (val) => isValidEmail(val),
+      { message: "Please enter a valid email address (e.g. name@example.com)" }
+    ),
 
   /** Service or product the complaint relates to — required; auto-populated on service pages */
   serviceProduct: z.string().min(1, "Service/Product is required"),

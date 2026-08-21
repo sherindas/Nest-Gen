@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isValidMobile, isValidEmail } from "@/lib/validation";
 
 /**
  * Zod schema for Sales Enquiry form submissions.
@@ -10,10 +11,22 @@ export const salesEnquirySchema = z.object({
   name: z.string().min(1, "Name is required"),
 
   /** 10-digit mobile number — required */
-  mobile: z.string().min(10, "Valid mobile number required"),
+  mobile: z
+    .string()
+    .min(1, "Mobile number is required")
+    .refine(
+      (val) => isValidMobile(val),
+      { message: "Please enter a valid 10-digit mobile number (e.g. 98765 43210)" }
+    ),
 
-  /** Email address — optional */
-  email: z.string().email("Invalid email address").optional().or(z.literal("")),
+  /** Email address — optional, but must be valid if provided */
+  email: z
+    .string()
+    .optional()
+    .refine(
+      (val) => isValidEmail(val),
+      { message: "Please enter a valid email address (e.g. name@example.com)" }
+    ),
 
   /** Product or service the customer is enquiring about — optional */
   productServiceRequirement: z.string().optional(),

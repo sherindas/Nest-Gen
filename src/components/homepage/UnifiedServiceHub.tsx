@@ -14,6 +14,7 @@ import {
 import { Input, Select, Textarea, Button } from "@/components/ui";
 import { services } from "@/lib/services";
 import { useLanguage } from "@/context/LanguageContext";
+import { isValidMobile, isValidEmail } from "@/lib/validation";
 
 type InquiryType =
   | "Book a Service / Repair"
@@ -58,6 +59,12 @@ export function UnifiedServiceHub({ initialService }: { initialService?: string 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{
+    fullName?: string;
+    mobile?: string;
+    location?: string;
+    email?: string;
+  }>({});
 
   const phone = process.env.NEXT_PUBLIC_COMPANY_PHONE || "+91 93535 98831";
   const whatsapp = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "919353598831";
@@ -125,34 +132,113 @@ export function UnifiedServiceHub({ initialService }: { initialService?: string 
     };
   }, []);
 
+  const handleBlur = (field: "fullName" | "mobile" | "location" | "email") => {
+    setFieldErrors((prev) => {
+      const next = { ...prev };
+      if (field === "fullName") {
+        if (!fullName.trim()) {
+          next.fullName =
+            language === "kn" ? "ದಯವಿಟ್ಟು ನಿಮ್ಮ ಪೂರ್ಣ ಹೆಸರನ್ನು ನಮೂದಿಸಿ." : "Please enter your full name.";
+        } else {
+          delete next.fullName;
+        }
+      }
+      if (field === "mobile") {
+        if (!mobile.trim()) {
+          next.mobile =
+            language === "kn"
+              ? "ದಯವಿಟ್ಟು ನಿಮ್ಮ ಮೊಬೈಲ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ."
+              : "Please enter your mobile number.";
+        } else if (!isValidMobile(mobile)) {
+          next.mobile =
+            language === "kn"
+              ? "ದಯವಿಟ್ಟು ಮಾನ್ಯವಾದ 10 ಅಂಕಿಗಳ ಮೊಬೈಲ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ (ಉದಾ: 98765 43210)."
+              : "Please enter a valid 10-digit mobile number (e.g. 98765 43210).";
+        } else {
+          delete next.mobile;
+        }
+      }
+      if (field === "location") {
+        if (!location.trim()) {
+          next.location =
+            language === "kn"
+              ? "ದಯವಿಟ್ಟು ನಿಮ್ಮ ವಿಳಾಸ ಅಥವಾ ಸ್ಥಳವನ್ನು ನಮೂದಿಸಿ."
+              : "Please provide your service location or address.";
+        } else {
+          delete next.location;
+        }
+      }
+      if (field === "email") {
+        if (email && email.trim().length > 0 && !isValidEmail(email)) {
+          next.email =
+            language === "kn"
+              ? "ದಯವಿಟ್ಟು ಮಾನ್ಯವಾದ ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ (ಉದಾ: name@example.com)."
+              : "Please enter a valid email address (e.g. name@example.com).";
+        } else {
+          delete next.email;
+        }
+      }
+      return next;
+    });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
 
-    // Basic client validation
+    const errors: {
+      fullName?: string;
+      mobile?: string;
+      location?: string;
+      email?: string;
+    } = {};
+
+    // Validate Full Name
     if (!fullName.trim()) {
-      setErrorMessage(
-        language === "kn" ? "ದಯವಿಟ್ಟು ನಿಮ್ಮ ಪೂರ್ಣ ಹೆಸರನ್ನು ನಮೂದಿಸಿ." : "Please enter your full name."
-      );
-      return;
+      errors.fullName =
+        language === "kn" ? "ದಯವಿಟ್ಟು ನಿಮ್ಮ ಪೂರ್ಣ ಹೆಸರನ್ನು ನಮೂದಿಸಿ." : "Please enter your full name.";
     }
-    if (!mobile.trim() || mobile.replace(/\D/g, "").length < 10) {
-      setErrorMessage(
+
+    // Validate Mobile Number
+    if (!mobile.trim()) {
+      errors.mobile =
         language === "kn"
-          ? "ದಯವಿಟ್ಟು ಮಾನ್ಯವಾದ 10 ಅಂಕಿಗಳ ಮೊಬೈಲ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ."
-          : "Please enter a valid 10-digit mobile number."
-      );
-      return;
+          ? "ದಯವಿಟ್ಟು ನಿಮ್ಮ ಮೊಬೈಲ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ."
+          : "Please enter your mobile number.";
+    } else if (!isValidMobile(mobile)) {
+      errors.mobile =
+        language === "kn"
+          ? "ದಯವಿಟ್ಟು ಮಾನ್ಯವಾದ 10 ಅಂಕಿಗಳ ಮೊಬೈಲ್ ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ (ಉದಾ: 98765 43210)."
+          : "Please enter a valid 10-digit mobile number (e.g. 98765 43210).";
     }
+
+    // Validate Location
     if (!location.trim()) {
-      setErrorMessage(
+      errors.location =
         language === "kn"
           ? "ದಯವಿಟ್ಟು ನಿಮ್ಮ ವಿಳಾಸ ಅಥವಾ ಸ್ಥಳವನ್ನು ನಮೂದಿಸಿ."
-          : "Please provide your service location or address."
+          : "Please provide your service location or address.";
+    }
+
+    // Validate Email (Optional, but must be valid if entered)
+    if (email && email.trim().length > 0 && !isValidEmail(email)) {
+      errors.email =
+        language === "kn"
+          ? "ದಯವಿಟ್ಟು ಮಾನ್ಯವಾದ ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ (ಉದಾ: name@example.com)."
+          : "Please enter a valid email address (e.g. name@example.com).";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors);
+      setErrorMessage(
+        language === "kn"
+          ? "ದಯವಿಟ್ಟು ನಮೂದಿಸಿರುವ ವಿವರಗಳನ್ನು ಪರಿಶೀಲಿಸಿ."
+          : "Please check and correct the highlighted fields."
       );
       return;
     }
 
+    setFieldErrors({});
     setIsSubmitting(true);
 
     try {
@@ -230,6 +316,8 @@ export function UnifiedServiceHub({ initialService }: { initialService?: string 
 
   const resetForm = () => {
     setSubmitted(false);
+    setFieldErrors({});
+    setErrorMessage(null);
     setDescription("");
     setQuantity("");
     setInvoiceRef("");
@@ -313,7 +401,14 @@ export function UnifiedServiceHub({ initialService }: { initialService?: string 
                   required
                   placeholder={t("form_full_name_ph")}
                   value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
+                  error={fieldErrors.fullName}
+                  onChange={(e) => {
+                    setFullName(e.target.value);
+                    if (fieldErrors.fullName) {
+                      setFieldErrors((prev) => ({ ...prev, fullName: undefined }));
+                    }
+                  }}
+                  onBlur={() => handleBlur("fullName")}
                 />
                 <Input
                   label={t("form_mobile")}
@@ -321,7 +416,14 @@ export function UnifiedServiceHub({ initialService }: { initialService?: string 
                   required
                   placeholder={t("form_mobile_ph")}
                   value={mobile}
-                  onChange={(e) => setMobile(e.target.value)}
+                  error={fieldErrors.mobile}
+                  onChange={(e) => {
+                    setMobile(e.target.value);
+                    if (fieldErrors.mobile) {
+                      setFieldErrors((prev) => ({ ...prev, mobile: undefined }));
+                    }
+                  }}
+                  onBlur={() => handleBlur("mobile")}
                 />
               </div>
 
@@ -332,7 +434,14 @@ export function UnifiedServiceHub({ initialService }: { initialService?: string 
                   required
                   placeholder={t("form_location_ph")}
                   value={location}
-                  onChange={(e) => setLocation(e.target.value)}
+                  error={fieldErrors.location}
+                  onChange={(e) => {
+                    setLocation(e.target.value);
+                    if (fieldErrors.location) {
+                      setFieldErrors((prev) => ({ ...prev, location: undefined }));
+                    }
+                  }}
+                  onBlur={() => handleBlur("location")}
                 />
                 <Input
                   label={t("form_email")}
@@ -340,7 +449,14 @@ export function UnifiedServiceHub({ initialService }: { initialService?: string 
                   hint={t("form_email_hint")}
                   placeholder={t("form_email_ph")}
                   value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  error={fieldErrors.email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (fieldErrors.email) {
+                      setFieldErrors((prev) => ({ ...prev, email: undefined }));
+                    }
+                  }}
+                  onBlur={() => handleBlur("email")}
                 />
               </div>
 

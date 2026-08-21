@@ -46,6 +46,7 @@ export function ServiceRequestForm({ defaultService }: ServiceRequestFormProps) 
     formState: { errors, isSubmitting },
   } = useForm<ServiceRequestFormData>({
     resolver: zodResolver(serviceRequestSchema),
+    mode: "onBlur",
     defaultValues: {
       service: defaultService ?? "",
     },
